@@ -1,0 +1,67 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cloner
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cloner
+  namespace: cloner
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cloner-secret-reader
+rules:
+  - apiGroups:
+    - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cloner
+rules:
+  - apiGroups:
+      - extensions
+      - apps
+    resources:
+      - deployments
+      - daemonsets
+    verbs:
+      - list
+      - watch
+      - get
+      - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cloner-secret-reader
+subjects:
+  - kind: ServiceAccount
+    name: cloner
+    namespace: cloner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cloner-secret-reader
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cloner
+subjects:
+  - kind: ServiceAccount
+    name: cloner
+    namespace: cloner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cloner
+---
