@@ -87,6 +87,28 @@ func Backup(srcImage, dstImage string) error {
 		return err
 	}
 
+	// Check if image:tag with latest digest already present. If yes then
+	// there is no need to push the image.
+	// If there is no error, it means atleast the image was present, may or not be
+	// same as the source image.
+	// If there is an error, it means either the image is not present in the backup repository
+	// or network issue or some other issue. Point being we can go ahead and push the image.
+	if dstimg, err := remote.Image(dstRef, remote.WithAuth(authn.Anonymous)); err == nil {
+		dstHash, err := dstimg.Digest()
+		if err != nil {
+			return fmt.Errorf("destination image %q already present , failed to get digest: %v", dstImage, err)
+		}
+
+		srcHash, err := img.Digest()
+		if err != nil {
+			return fmt.Errorf("failed to get digest of source image %q: %v", srcImage, err)
+		}
+
+		if srcHash == dstHash {
+			return nil
+		}
+	}
+
 	if err = remote.Write(dstRef, img, remote.WithAuth(auth)); err != nil {
 		return fmt.Errorf("failed to push image: %v", err)
 	}
