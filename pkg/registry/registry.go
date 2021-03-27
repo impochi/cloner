@@ -1,3 +1,5 @@
+// Package registry handles the registry relation functionality such as pushing
+// the container image to the provided registry, fetching registry credentials.
 package registry
 
 import (
@@ -32,13 +34,17 @@ func fetchCredentials() (*registryCredentials, error) {
 	}, nil
 }
 
+// GetDestinationImage returns the name of the destination image.
 func GetDestinationImage(srcImage string) (string, error) {
 	dstImage := ""
+
 	creds, err := fetchCredentials()
 	if err != nil {
 		return dstImage, err
 	}
+
 	repo, tag := getRepoAndTagFromImage(srcImage)
+
 	if len(creds.provider) != 0 {
 		dstImage += fmt.Sprintf("%s/", creds.provider)
 	}
@@ -52,6 +58,7 @@ func GetDestinationImage(srcImage string) (string, error) {
 	return dstImage, nil
 }
 
+// Backup pushes the docker image to the provided repository.
 func Backup(srcImage, dstImage string) error {
 	srcRef, err := getReference(srcImage)
 	if err != nil {
@@ -93,7 +100,9 @@ func getRepoAndTagFromImage(image string) (repository, tag string) {
 	}
 
 	str := strings.Split(image, ":")
+
 	imageWithoutTag := str[0]
+
 	if len(str) == 1 {
 		tag = ""
 	} else {

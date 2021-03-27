@@ -42,8 +42,8 @@ spec:
         - containerPort: 80
 `
 
+//nolint:funlen
 func TestDaemonSetImageClone(t *testing.T) {
-
 	client := util.CreateKubernetesClient(t)
 
 	namespace := &corev1.Namespace{}
@@ -68,6 +68,7 @@ func TestDaemonSetImageClone(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get destination image: %v", err)
 	}
+
 	dstContainerImage, err := registry.GetDestinationImage(containerImage)
 	if err != nil {
 		t.Fatalf("failed to get destination image: %v", err)
@@ -111,5 +112,4 @@ func TestDaemonSetImageClone(t *testing.T) {
 
 		util.WaitForNamespaceToBeDeleted(t, client, namespace.ObjectMeta.Name, time.Second*5, time.Minute*5)
 	})
-
 }

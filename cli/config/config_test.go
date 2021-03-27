@@ -12,7 +12,9 @@ const testNamespace = "test-ns"
 func TestParseIgnoreNamespaces(t *testing.T) {
 	cfg := &config.Config{}
 
-	os.Setenv("CONTROLLER_NAMESPACE", testNamespace)
+	if err := os.Setenv("CONTROLLER_NAMESPACE", testNamespace); err != nil {
+		t.Fatalf("Failed to set env variable `CONTROLLER_NAMESPACE`")
+	}
 
 	cases := []struct {
 		namespaces string
@@ -21,7 +23,8 @@ func TestParseIgnoreNamespaces(t *testing.T) {
 		{
 			namespaces: "",
 			wanted:     []string{"kube-system", testNamespace},
-		}, {
+		},
+		{
 			namespaces: "default,kube-system,default",
 			wanted:     []string{"default", "kube-system", testNamespace},
 		},

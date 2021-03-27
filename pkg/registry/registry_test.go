@@ -1,3 +1,4 @@
+//nolint:testpackage
 package registry
 
 import (
@@ -56,19 +57,26 @@ func TestFetchCredentials(t *testing.T) {
 	}
 
 	for _, testcase := range cases {
-		os.Setenv("REGISTRY_PROVIDER", testcase.provider)
-		os.Setenv("REGISTRY_USERNAME", testcase.username)
-		os.Setenv("REGISTRY_PASSWORD", testcase.password)
+		if err := os.Setenv("REGISTRY_PROVIDER", testcase.provider); err != nil {
+			t.Fatalf("Failed to set env variable `REGISTRY_PROVIDER`: %q", err)
+		}
+
+		if err := os.Setenv("REGISTRY_USERNAME", testcase.username); err != nil {
+			t.Fatalf("Failed to set env variable `REGISTRY_PROVIDER`: %q", err)
+		}
+
+		if err := os.Setenv("REGISTRY_PASSWORD", testcase.password); err != nil {
+			t.Fatalf("Failed to set env variable `REGISTRY_PROVIDER`: %q", err)
+		}
 
 		_, err := fetchCredentials()
 		if err != nil && !testcase.expectErr {
 			t.Errorf("Failed to fetch credentials: %v", err)
 		}
 	}
-
 }
 
-func TestGetDestinationImage(t *testing.T) {
+func TestGetDestinationImage(t *testing.T) { //nolint:funlen
 	cases := []struct {
 		provider string
 		username string
@@ -114,9 +122,17 @@ func TestGetDestinationImage(t *testing.T) {
 	}
 
 	for _, testcase := range cases {
-		os.Setenv("REGISTRY_PROVIDER", testcase.provider)
-		os.Setenv("REGISTRY_USERNAME", testcase.username)
-		os.Setenv("REGISTRY_PASSWORD", password)
+		if err := os.Setenv("REGISTRY_PROVIDER", testcase.provider); err != nil {
+			t.Fatalf("Failed to set env variable `REGISTRY_PROVIDER`: %q", err)
+		}
+
+		if err := os.Setenv("REGISTRY_USERNAME", testcase.username); err != nil {
+			t.Fatalf("Failed to set env variable `REGISTRY_PROVIDER`: %q", err)
+		}
+
+		if err := os.Setenv("REGISTRY_PASSWORD", password); err != nil {
+			t.Fatalf("Failed to set env variable `REGISTRY_PROVIDER`: %q", err)
+		}
 
 		dst, err := GetDestinationImage(testcase.input)
 		if err != nil {
@@ -163,6 +179,7 @@ func TestGetRepoAndTagFromImage(t *testing.T) {
 		if testcase.repo != imagerepo {
 			t.Errorf("Expected repository name as %q, got %q", testcase.repo, imagerepo)
 		}
+
 		if testcase.tag != imagetag {
 			t.Errorf("Expected repository name as %q, got %q", testcase.tag, imagetag)
 		}

@@ -13,3 +13,14 @@ docker-build:
 .PHONY: test
 test:
 	go test -mod=vendor -buildmode=exe ./...
+
+.PHONY: lint
+lint: build test lint-bin
+
+.PHONY: lint-bin
+lint-bin:
+	golangci-lint run ./...
+
+.PHONY: lint-docker
+lint-docker:
+	docker run --rm -v $(shell pwd):/app -w /app golangci/golangci-lint:v1.30.0 make lint

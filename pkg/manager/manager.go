@@ -1,3 +1,4 @@
+// Package manager handles the manager lifecycle and initiates the controller.
 package manager
 
 import (
@@ -17,8 +18,8 @@ import (
 	"github.com/impochi/cloner/cli/config"
 )
 
-func Run(config *config.Config) {
-
+// Run starts the manager.
+func Run(config *config.Config) { //nolint:funlen
 	controllerruntime.SetLogger(config.Logger)
 	log := controllerruntime.Log.WithName("manager")
 
@@ -26,7 +27,6 @@ func Run(config *config.Config) {
 		controllerruntime.GetConfigOrDie(),
 		controllerruntime.Options{},
 	)
-
 	if err != nil {
 		log.Error(err, "failed to create manager")
 		os.Exit(1)
@@ -46,7 +46,7 @@ func Run(config *config.Config) {
 		log.Error(err, "failed to create controller")
 	}
 
-	ctrller.Watch(
+	if err := ctrller.Watch(
 		&source.Kind{Type: &appsv1.Deployment{}},
 		&handler.EnqueueRequestForObject{},
 		predicate.NewPredicateFuncs(func(obj client.Object) bool {
@@ -56,11 +56,14 @@ func Run(config *config.Config) {
 					return false
 				}
 			}
+
 			return true
 		}),
-	)
+	); err != nil {
+		log.Error(err, "failed to watch Deployment")
+	}
 
-	ctrller.Watch(
+	if err := ctrller.Watch(
 		&source.Kind{Type: &appsv1.DaemonSet{}},
 		&handler.EnqueueRequestForObject{},
 		predicate.NewPredicateFuncs(func(obj client.Object) bool {
@@ -70,12 +73,16 @@ func Run(config *config.Config) {
 					return false
 				}
 			}
+
 			return true
 		}),
-	)
+	); err != nil {
+		log.Error(err, "failed to watch DaemonSet")
+	}
 
 	// Starting the controller manager
 	log.Info("starting the controller manager")
+
 	if err := mgr.Start(signals.SetupSignalHandler()); err != nil {
 		log.Error(err, "failed to start controller manager")
 		os.Exit(1)
