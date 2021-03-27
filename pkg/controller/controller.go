@@ -45,7 +45,7 @@ func (cr *ClonerReconciler) Reconcile(ctx context.Context, req reconcile.Request
 
 	log.Info("reconciling Deployment", "deployment name", deployment.Name)
 
-	if kind == "Deployment" {
+	if kind == "Deployment" && isDeploymentReady(deployment) {
 		needsUpdate := false
 		for index, container := range deployment.Spec.Template.Spec.InitContainers {
 			dstImage, err := pkgregistry.GetDestinationImage(container.Image)
@@ -90,7 +90,7 @@ func (cr *ClonerReconciler) Reconcile(ctx context.Context, req reconcile.Request
 		}
 	}
 
-	if kind == "DaemonSet" {
+	if kind == "DaemonSet" && isDaemonSetReady(daemonset) {
 		needsUpdate := false
 		for index, container := range daemonset.Spec.Template.Spec.InitContainers {
 			dstImage, err := pkgregistry.GetDestinationImage(container.Image)
@@ -136,4 +136,26 @@ func (cr *ClonerReconciler) Reconcile(ctx context.Context, req reconcile.Request
 	}
 
 	return reconcile.Result{}, nil
+}
+
+func isDaemonSetReady(ds *appsv1.DaemonSet) bool {
+	status := ds.Status
+	desired := status.DesiredNumberScheduled
+	ready := status.NumberReady
+	if desired == ready && desired > 0 {
+		return true
+	}
+
+	return false
+}
+
+func isDeploymentReady(deployments *appsv1.Deployment) bool {
+	status := deployments.Status
+	desired := status.Replicas
+	ready := status.ReadyReplicas
+	if desired == ready && desired > 0 {
+		return true
+	}
+
+	return false
 }
