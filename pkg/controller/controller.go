@@ -35,7 +35,7 @@ func (cr *ClonerReconciler) Reconcile(ctx context.Context, req reconcile.Request
 			return reconcile.Result{}, nil
 		}
 
-		kind = "Daemonset"
+		kind = "DaemonSet"
 	}
 
 	if err != nil {
@@ -51,10 +51,12 @@ func (cr *ClonerReconciler) Reconcile(ctx context.Context, req reconcile.Request
 			dstImage, err := pkgregistry.GetDestinationImage(container.Image)
 			if err != nil {
 				log.Error(err, "failed to get destination image")
+				return reconcile.Result{}, err
 			}
 			if container.Image != dstImage {
 				if err := pkgregistry.Backup(container.Image, dstImage); err != nil {
 					log.Error(err, "failed to push image")
+					return reconcile.Result{}, err
 				}
 
 				deployment.Spec.Template.Spec.InitContainers[index].Image = dstImage
@@ -66,10 +68,12 @@ func (cr *ClonerReconciler) Reconcile(ctx context.Context, req reconcile.Request
 			dstImage, err := pkgregistry.GetDestinationImage(container.Image)
 			if err != nil {
 				log.Error(err, "failed to get destination image")
+				return reconcile.Result{}, err
 			}
 			if container.Image != dstImage {
 				if err := pkgregistry.Backup(container.Image, dstImage); err != nil {
 					log.Error(err, "failed to push image")
+					return reconcile.Result{}, err
 				}
 
 				deployment.Spec.Template.Spec.Containers[index].Image = dstImage
@@ -81,46 +85,52 @@ func (cr *ClonerReconciler) Reconcile(ctx context.Context, req reconcile.Request
 		if needsUpdate {
 			if err := cr.Client.Update(ctx, deployment); err != nil {
 				log.Error(err, "failed to update Deployment")
+				return reconcile.Result{}, err
 			}
 		}
 	}
 
 	if kind == "DaemonSet" {
 		needsUpdate := false
-		for index, container := range deployment.Spec.Template.Spec.InitContainers {
+		for index, container := range daemonset.Spec.Template.Spec.InitContainers {
 			dstImage, err := pkgregistry.GetDestinationImage(container.Image)
 			if err != nil {
 				log.Error(err, "failed to get destination image")
+				return reconcile.Result{}, err
 			}
 			if container.Image != dstImage {
 				if err := pkgregistry.Backup(container.Image, dstImage); err != nil {
 					log.Error(err, "failed to push image")
+					return reconcile.Result{}, err
 				}
 
-				deployment.Spec.Template.Spec.InitContainers[index].Image = dstImage
+				daemonset.Spec.Template.Spec.InitContainers[index].Image = dstImage
 				needsUpdate = true
 			}
 		}
 
-		for index, container := range deployment.Spec.Template.Spec.Containers {
+		for index, container := range daemonset.Spec.Template.Spec.Containers {
 			dstImage, err := pkgregistry.GetDestinationImage(container.Image)
 			if err != nil {
 				log.Error(err, "failed to get destination image")
+				return reconcile.Result{}, err
 			}
 			if container.Image != dstImage {
 				if err := pkgregistry.Backup(container.Image, dstImage); err != nil {
 					log.Error(err, "failed to push image")
+					return reconcile.Result{}, err
 				}
 
-				deployment.Spec.Template.Spec.Containers[index].Image = dstImage
+				daemonset.Spec.Template.Spec.Containers[index].Image = dstImage
 				needsUpdate = true
 			}
 		}
 
-		// Update Deployment
+		// Update Daemonset
 		if needsUpdate {
-			if err := cr.Client.Update(ctx, deployment); err != nil {
-				log.Error(err, "failed to update Deployment")
+			if err := cr.Client.Update(ctx, daemonset); err != nil {
+				log.Error(err, "failed to update DaemonSet")
+				return reconcile.Result{}, err
 			}
 		}
 	}
