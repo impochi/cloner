@@ -1,3 +1,4 @@
+// Package util handles the utility functions during the tests.
 package util
 
 import (
@@ -20,6 +21,7 @@ const (
 	Timeout = time.Minute * 2
 )
 
+// CreateKubernetesClient creates a Kubernetes client to talk to the API Server.
 func CreateKubernetesClient(t *testing.T) *kubernetes.Clientset {
 	kubeconfigPath := os.ExpandEnv(os.Getenv("KUBECONFIG"))
 	if kubeconfigPath == "" {
@@ -39,12 +41,15 @@ func CreateKubernetesClient(t *testing.T) *kubernetes.Clientset {
 	return cs
 }
 
-func WaitForNamespaceToBeDeleted(t *testing.T, client kubernetes.Interface, name string, retryInterval, timeout time.Duration) {
+// WaitForNamespaceToBeDeleted waits for the namespace to the deleted.
+func WaitForNamespaceToBeDeleted(t *testing.T,
+	client kubernetes.Interface, name string, retryInterval, timeout time.Duration) {
 	if err := wait.PollImmediate(retryInterval, timeout, func() (done bool, err error) {
 		_, err = client.CoreV1().Namespaces().Get(context.TODO(), name, metav1.GetOptions{})
 		if err != nil {
 			if k8serrors.IsNotFound(err) {
 				t.Logf("namespace %s deleted", name)
+
 				return true, nil
 			}
 
@@ -52,7 +57,6 @@ func WaitForNamespaceToBeDeleted(t *testing.T, client kubernetes.Interface, name
 		}
 
 		return false, nil
-
 	}); err != nil {
 		t.Fatalf("waiting for the namespace to be deleted: %v", err)
 	}

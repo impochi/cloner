@@ -49,8 +49,8 @@ spec:
         - containerPort: 80
 `
 
+//nolint:funlen
 func TestDeploymentImageClone(t *testing.T) {
-
 	client := util.CreateKubernetesClient(t)
 
 	namespace := &corev1.Namespace{}
@@ -81,7 +81,8 @@ func TestDeploymentImageClone(t *testing.T) {
 		t.Fatalf("failed to get destination image: %v", err)
 	}
 
-	deployment, err = client.AppsV1().Deployments(namespace.Name).Create(context.TODO(), deployment, metav1.CreateOptions{})
+	deployment, err = client.AppsV1().Deployments(namespace.Name).Create(
+		context.TODO(), deployment, metav1.CreateOptions{})
 	if err != nil {
 		t.Fatalf("failed to create Deployment: %v", err)
 	}
@@ -90,7 +91,8 @@ func TestDeploymentImageClone(t *testing.T) {
 	// TODO: implement dynamic wait, that checks if the deployment is ready or not before proceeding.
 	time.Sleep(1 * time.Minute)
 
-	deployment, err = client.AppsV1().Deployments(namespace.Name).Get(context.TODO(), deployment.Name, metav1.GetOptions{})
+	deployment, err = client.AppsV1().Deployments(namespace.Name).Get(
+		context.TODO(), deployment.Name, metav1.GetOptions{})
 	if err != nil {
 		t.Fatalf("failed to create Deployment: %v", err)
 	}

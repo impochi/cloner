@@ -1,3 +1,4 @@
+// Package cmd handles the cli options for the controller.
 package cmd
 
 import (
@@ -8,10 +9,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 )
 
-var (
-	ignoreNamespaces string
-)
+var ignoreNamespaces string
 
+// Execute executes and initiates the cli flags, creates config.
 func Execute() {
 	flag.StringVar(&ignoreNamespaces, "ignore-namespaces", "kube-system", "Namespaces to ignore when cloning images")
 
