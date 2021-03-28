@@ -52,11 +52,11 @@ func (cr *ClonerReconciler) Reconcile(ctx context.Context, req reconcile.Request
 
 	log.Info("reconciling Deployment", "deployment name", deployment.Name)
 
-	if kind == "Deployment" && isDeploymentReady(deployment) {
+	if kind == "Deployment" && isDeploymentReady(deployment) && len(deployment.Spec.Template.Spec.ImagePullSecrets) == 0 {
 		return cr.reconcileDeployment(ctx, deployment)
 	}
 
-	if kind == "DaemonSet" && isDaemonSetReady(daemonset) {
+	if kind == "DaemonSet" && isDaemonSetReady(daemonset) && len(daemonset.Spec.Template.Spec.ImagePullSecrets) == 0 {
 		return cr.reconcileDaemonSet(ctx, daemonset)
 	}
 
