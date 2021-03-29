@@ -26,8 +26,19 @@ The controller ignores the Deployments/DaemonSets in the `kube-system` namespace
 
 ## Testing
 
-The repository provides e2e tests, you can also create a Deployment/DaemonSet and check that the images would have been
-copied over to the provided registry and the Deployment/DaemonSet restarted in order to use the new image location.
+Sample Deployment and Daemonset manifests are provided in order to test the controller:
+
+```bash
+kubectl create namespace test
+kubectl apply -n test -f examples/nginx.yaml
+kubectl apply -n test -f examples/node-exporter.yaml
+```
+
+Once the pods are in running status, Controller will backup the images and restart the Deployment and Daemonset.
+Successful back up of the controller can be verified by the `image` field in `containers` and `initContainers`
+
+The repository also provides e2e tests, you can also create a Deployment/DaemonSet and check that the images would have
+been copied over to the provided registry and the Deployment/DaemonSet restarted in order to use the new image location.
 
 In order to run the e2e tests, execute the following command:
 
