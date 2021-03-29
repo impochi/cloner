@@ -5,7 +5,7 @@ metadata:
   name: cloner
   namespace: cloner
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app.kubernetes.io/name: cloner
@@ -22,6 +22,7 @@ spec:
           command:
           - /cloner
           - --ignore-namespaces=kube-system
+          - --enable-leader-election
           - -zap-encoder=console
           resources:
             requests:
