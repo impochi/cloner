@@ -10,8 +10,9 @@ import (
 
 // Config represents the configuration for the controller.
 type Config struct {
-	IgnoreNamespaces []string
-	Logger           logr.Logger
+	IgnoreNamespaces     []string
+	EnableLeaderElection bool
+	Logger               logr.Logger
 }
 
 // ParseIgnoreNamespaces parses the namespaces string provided by the user

@@ -18,6 +18,8 @@ import (
 	"github.com/impochi/cloner/cli/config"
 )
 
+const leaderElectionID = "cloner-leader-election-id"
+
 // Run starts the manager.
 func Run(config *config.Config) { //nolint:funlen
 	controllerruntime.SetLogger(config.Logger)
@@ -25,7 +27,10 @@ func Run(config *config.Config) { //nolint:funlen
 
 	mgr, err := controllerruntime.NewManager(
 		controllerruntime.GetConfigOrDie(),
-		controllerruntime.Options{},
+		controllerruntime.Options{
+			LeaderElection:   config.EnableLeaderElection,
+			LeaderElectionID: leaderElectionID,
+		},
 	)
 	if err != nil {
 		log.Error(err, "failed to create manager")
