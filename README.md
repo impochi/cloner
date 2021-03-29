@@ -58,3 +58,7 @@ docker push <repo_name>/<image_name>:<tag>
 * Deployments/DaemonSets created in the controllers namespace are Ignored. See issue [#7](https://github.com/impochi/cloner/issues/7)
 * Controller only takes backup of public images and leaves the private images untouched i.e if the Deployment/DaemonSet
   contains an `imagePullSecret` the resource images are not backed up.
+
+## Demo
+
+[![asciicast](https://asciinema.org/a/dir7mBgybU1KKjIgdtKkad105.svg)](https://asciinema.org/a/dir7mBgybU1KKjIgdtKkad105)
