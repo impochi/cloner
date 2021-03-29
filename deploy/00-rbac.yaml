@@ -14,11 +14,13 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: cloner-role
+  namespace: cloner
 rules:
   - apiGroups:
       - ""
     resources:
       - configmaps
+      - events
     verbs:
       - get
       - create
@@ -63,6 +65,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: cloner-rolebinding
+  namespace: cloner
 subjects:
   - kind: ServiceAccount
     name: cloner
