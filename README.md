@@ -15,7 +15,7 @@ The controller ignores the Deployments/DaemonSets in the `kube-system` namespace
 
 ## Installation
 
-1. Update the file [deploy/01-secrets.yaml](https://github.com/kinvolk/lokomotive/blob/main/deploy/01-secrets.yaml)
+1. Update the file [deploy/01-secrets.yaml](https://github.com/impochi/cloner/blob/main/deploy/01-secrets.yaml)
   Provide the credentials for the container registry.
 
 2. Apply the manifests in the `deploy` directory:
