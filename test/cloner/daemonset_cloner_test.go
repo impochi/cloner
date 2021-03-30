@@ -16,7 +16,7 @@ import (
 	"github.com/impochi/cloner/test/util"
 )
 
-const daemonsetManifest = `apiVersion: extensions/v1beta1
+const daemonsetManifest = `apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: prometheus-daemonset
